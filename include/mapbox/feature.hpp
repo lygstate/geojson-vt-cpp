@@ -35,7 +35,11 @@ using value_base = mapbox::util::variant<null_value_t, bool, uint64_t, int64_t, 
 
 struct value : value_base
 {
-    using value_base::value_base;
+    value() : value_base() {};
+    template <typename U>
+    value(const U &_v) :value_base(_v) {}
+    template <typename U>
+    value(U&& _v) :value_base(_v) {}
 };
 
 using property_map = std::unordered_map<std::string, value>;
@@ -71,6 +75,14 @@ struct feature
         : geometry(std::move(geom_)),
           properties(std::move(prop_)),
           id() {}
+    feature(geometry_type const& geom_, identifier const& id_)
+        : geometry(geom_),
+          properties(),
+          id(id_) {}
+    feature(geometry_type&& geom_, identifier&& id_)
+        : geometry(std::move(geom_)),
+          properties(),
+          id(std::move(id_)) {}
     feature(geometry_type const& geom_, property_map const& prop_, identifier const& id_)
         : geometry(geom_),
           properties(prop_),
